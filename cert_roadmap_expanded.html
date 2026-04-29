@@ -1,0 +1,870 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{font-family:var(--font-sans);max-width:900px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:0.75rem}
+.tab{padding:6px 14px;font-size:12px;font-weight:500;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;cursor:pointer;color:var(--color-text-secondary);transition:all .15s}
+.tab:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.track{display:none}.track.active{display:block}
+.cert-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:1rem;overflow:hidden}
+.cert-header{display:flex;align-items:flex-start;gap:12px;padding:1rem 1.25rem;cursor:pointer;user-select:none}
+.cert-header:hover{background:var(--color-background-secondary)}
+.badge{width:48px;height:48px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;text-align:center;line-height:1.3}
+.cert-main{flex:1}
+.cert-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.cert-sub{font-size:12px;color:var(--color-text-secondary);margin-top:3px;line-height:1.4}
+.cert-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.pill{font-size:11px;font-weight:500;padding:2px 8px;border-radius:var(--border-radius-md)}
+.p-blue{background:#E6F1FB;color:#0C447C}
+.p-green{background:#EAF3DE;color:#3B6D11}
+.p-amber{background:#FAEEDA;color:#854F0B}
+.p-red{background:#FCEBEB;color:#A32D2D}
+.p-teal{background:#E1F5EE;color:#0F6E56}
+.p-purple{background:#EEEDFE;color:#3C3489}
+.p-gray{background:#F1EFE8;color:#5F5E5A}
+.chevron{font-size:12px;color:var(--color-text-tertiary);margin-left:auto;align-self:center;transition:transform .2s}
+.cert-body{display:none;padding:0 1.25rem 1.25rem;border-top:0.5px solid var(--color-border-tertiary)}
+.cert-body.open{display:block}
+.cert-card.open .chevron{transform:rotate(180deg)}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0.875rem 0}
+.stat-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.625rem 0.75rem}
+.stat-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-tertiary);margin-bottom:3px}
+.stat-val{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:0.875rem 0}
+.res-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.75rem}
+.res-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-tertiary);margin-bottom:6px}
+.res-item{font-size:12px;color:var(--color-text-primary);line-height:1.5;padding:2px 0;display:flex;align-items:flex-start;gap:6px}
+.res-dot{width:4px;height:4px;border-radius:50%;background:var(--color-text-tertiary);margin-top:6px;flex-shrink:0}
+.value-bar-wrap{margin:0.875rem 0}
+.value-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-tertiary);margin-bottom:6px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.bar-name{font-size:12px;color:var(--color-text-secondary);width:110px;flex-shrink:0}
+.bar-outer{flex:1;height:8px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden}
+.bar-inner{height:100%;border-radius:4px;transition:width .4s}
+.bar-pct{font-size:11px;color:var(--color-text-secondary);width:32px;text-align:right;flex-shrink:0}
+.link-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#185FA5;text-decoration:none;padding:2px 0;border:none;background:transparent;cursor:pointer}
+.link-btn:hover{text-decoration:underline}
+.note-box{background:var(--color-background-warning);border-radius:var(--border-radius-md);padding:0.625rem 0.875rem;font-size:12px;color:var(--color-text-warning);line-height:1.5;margin-top:0.75rem}
+.seclabel{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-tertiary);margin:1.25rem 0 0.75rem}
+.intro-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:0.875rem 1rem;margin-bottom:1rem;font-size:13px;color:var(--color-text-primary);line-height:1.6}
+@media(max-width:600px){.grid4{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTrack('entry',this)">Entry Level</button>
+    <button class="tab" onclick="switchTrack('sysadmin',this)">SysAdmin Track</button>
+    <button class="tab" onclick="switchTrack('infosec',this)">InfoSec Track</button>
+    <button class="tab" onclick="switchTrack('aws',this)">AWS Track</button>
+    <button class="tab" onclick="switchTrack('senior',this)">Senior / Leadership</button>
+    <button class="tab" onclick="switchTrack('specialty',this)">Specialty &amp; Cloud Sec</button>
+  </div>
+
+  <!-- ENTRY -->
+  <div id="entry" class="track active">
+    <div class="intro-card">Start here regardless of track. These are the HR filters — without them, your resume may never reach a human. Security+ is the single highest-priority cert if you only do one thing first.</div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#E6F1FB;color:#0C447C;">S+</div>
+        <div class="cert-main">
+          <div class="cert-title">CompTIA Security+ (SY0-701)</div>
+          <div class="cert-sub">Universal HR filter · DoD 8570 IAT Level II · Vendor-neutral · #1 priority cert</div>
+          <div class="cert-pills"><span class="pill p-blue">$404 exam</span><span class="pill p-green">2–3 months</span><span class="pill p-amber">High ROI</span><span class="pill p-teal">DoD 8570</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">$404</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">2–3 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary lift</div><div class="stat-val">$8–15K/yr</div></div>
+          <div class="stat-box"><div class="stat-label">Validity</div><div class="stat-val">3 years</div></div>
+        </div>
+        <div class="value-bar-wrap">
+          <div class="value-label">Value metrics</div>
+          <div class="bar-row"><div class="bar-name">HR filter power</div><div class="bar-outer"><div class="bar-inner" style="width:98%;background:#185FA5"></div></div><div class="bar-pct">98%</div></div>
+          <div class="bar-row"><div class="bar-name">Employer demand</div><div class="bar-outer"><div class="bar-inner" style="width:95%;background:#185FA5"></div></div><div class="bar-pct">95%</div></div>
+          <div class="bar-row"><div class="bar-name">Study difficulty</div><div class="bar-outer"><div class="bar-inner" style="width:40%;background:#BA7517"></div></div><div class="bar-pct">40%</div></div>
+          <div class="bar-row"><div class="bar-name">Salary impact</div><div class="bar-outer"><div class="bar-inner" style="width:60%;background:#1D9E75"></div></div><div class="bar-pct">60%</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>Professor Messer — full free SY0-701 video course (professormesser.com)</div>
+            <div class="res-item"><div class="res-dot"></div>CompTIA free study guide + exam objectives PDF</div>
+            <div class="res-item"><div class="res-dot"></div>TryHackMe free tier — hands-on labs aligned to objectives</div>
+            <div class="res-item"><div class="res-dot"></div>Cybrary — free Security+ course (account required)</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources (~$15–30)</div>
+            <div class="res-item"><div class="res-dot"></div>Jason Dion — Security+ SY0-701 on Udemy ($15–20 on sale) — most popular paid course</div>
+            <div class="res-item"><div class="res-dot"></div>Mike Chapple &amp; David Seidl — CompTIA Security+ Study Guide (book, $35–40)</div>
+            <div class="res-item"><div class="res-dot"></div>Darril Gibson practice exams — highly recommended for drill</div>
+            <div class="res-item"><div class="res-dot"></div>CompTIA CertMaster Learn ($349) — only if employer reimburses</div>
+          </div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Why it matters</div>
+          <div class="res-item"><div class="res-dot"></div>Universally mentioned as the must-have to get past HR filters — especially for government, defense, or large corporate IT roles.</div>
+          <div class="res-item"><div class="res-dot"></div>DoD 8570/8140 compliant at IAT Level II — required for any federal IT/security contractor role.</div>
+          <div class="res-item"><div class="res-dot"></div>SY0-701 now covers zero trust, cloud, IoT/OT, AI threats, and hybrid environments — far more modern than prior versions.</div>
+          <div class="res-item"><div class="res-dot"></div>Stepping stone toward CySA+, CISSP, and most advanced certs — they list Security+ as a prerequisite or recommendation.</div>
+        </div>
+        <div style="margin-top:10px"><a class="link-btn" href="https://www.comptia.org/certifications/security" target="_blank">&#9654; Official cert page &#8599;</a>&nbsp;&nbsp;<a class="link-btn" href="https://www.professormesser.com/security-plus/sy0-701/sy0-701-video/sy0-701-comptia-security-plus-course/" target="_blank">&#9654; Prof. Messer free course &#8599;</a></div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#F1EFE8;color:#5F5E5A;">A+</div>
+        <div class="cert-main">
+          <div class="cert-title">CompTIA A+ (Core 1 &amp; Core 2)</div>
+          <div class="cert-sub">IT support foundation · Two-exam cert · Skip if you have 2+ years IT experience</div>
+          <div class="cert-pills"><span class="pill p-gray">~$250/exam</span><span class="pill p-green">2 months</span><span class="pill p-gray">Entry only</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$253 each</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">1.5–2 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$45–60K entry</div></div>
+          <div class="stat-box"><div class="stat-label">Validity</div><div class="stat-val">3 years</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>Professor Messer — full free A+ Core 1 &amp; Core 2 courses on YouTube and his site</div>
+            <div class="res-item"><div class="res-dot"></div>CompTIA official exam objectives PDF — free download</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources</div>
+            <div class="res-item"><div class="res-dot"></div>Mike Meyers A+ Total Seminars on Udemy ($15–20 on sale) — comprehensive and well-structured</div>
+            <div class="res-item"><div class="res-dot"></div>Jason Dion A+ Core 1 &amp; Core 2 practice exams on Udemy</div>
+          </div>
+        </div>
+        <div class="note-box">Recommendation: If you already have 2+ years hands-on IT work — skip A+ and go straight to Security+. A+ is best for career changers or people still in help desk with zero IT background. Don't spend time and money here if you can test your way past it.</div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#E6F1FB;color:#0C447C;">N+</div>
+        <div class="cert-main">
+          <div class="cert-title">CompTIA Network+</div>
+          <div class="cert-sub">Networking fundamentals · Bridges A+ to Security+ · Good for sysadmin foundation</div>
+          <div class="cert-pills"><span class="pill p-blue">~$369 exam</span><span class="pill p-green">2 months</span><span class="pill p-gray">Optional</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$369</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">1.5–2 months</div></div>
+          <div class="stat-box"><div class="stat-label">Target role</div><div class="stat-val">Jr. SysAdmin</div></div>
+          <div class="stat-box"><div class="stat-label">DoD 8570</div><div class="stat-val">IAT Level I</div></div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Resources</div>
+          <div class="res-item"><div class="res-dot"></div>Professor Messer — free Network+ course on YouTube (best free option)</div>
+          <div class="res-item"><div class="res-dot"></div>Mike Meyers Network+ Total Seminars — Udemy (~$15 on sale)</div>
+          <div class="res-item"><div class="res-dot"></div>Dion Training Network+ practice exams — Udemy</div>
+        </div>
+        <div class="note-box">Network+ is optional if Security+ is your goal. However, if networking concepts are weak (subnetting, VLANs, routing basics), N+ is worth doing first — those gaps will hurt you on Security+ and in technical interviews.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYSADMIN -->
+  <div id="sysadmin" class="track">
+    <div class="intro-card">After Security+, AZ-104 is the highest-priority cert for sysadmin roles in 2026. Most Microsoft/hybrid environments now expect it. Pair with RHCSA if you're in a Linux-heavy shop.</div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#E1F5EE;color:#0F6E56;">104</div>
+        <div class="cert-main">
+          <div class="cert-title">Microsoft AZ-104 — Azure Administrator Associate</div>
+          <div class="cert-sub">Most requested cloud cert for SysAdmin · Validates Azure VMs, networking, IAM, storage, monitoring</div>
+          <div class="cert-pills"><span class="pill p-green">~$165 exam</span><span class="pill p-blue">2–3 months</span><span class="pill p-amber">Very high ROI</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$165</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">2–3 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$100–130K</div></div>
+          <div class="stat-box"><div class="stat-label">Validity</div><div class="stat-val">1 year (renewable)</div></div>
+        </div>
+        <div class="value-bar-wrap">
+          <div class="value-label">Value metrics</div>
+          <div class="bar-row"><div class="bar-name">Job demand</div><div class="bar-outer"><div class="bar-inner" style="width:92%;background:#185FA5"></div></div><div class="bar-pct">92%</div></div>
+          <div class="bar-row"><div class="bar-name">Salary impact</div><div class="bar-outer"><div class="bar-inner" style="width:80%;background:#1D9E75"></div></div><div class="bar-pct">80%</div></div>
+          <div class="bar-row"><div class="bar-name">Study difficulty</div><div class="bar-outer"><div class="bar-inner" style="width:52%;background:#BA7517"></div></div><div class="bar-pct">52%</div></div>
+          <div class="bar-row"><div class="bar-name">Market growth</div><div class="bar-outer"><div class="bar-inner" style="width:88%;background:#1D9E75"></div></div><div class="bar-pct">88%</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>Microsoft Learn — free full AZ-104 learning path with labs (learn.microsoft.com)</div>
+            <div class="res-item"><div class="res-dot"></div>John Savill's AZ-104 Study Cram — YouTube (exceptional quality, free)</div>
+            <div class="res-item"><div class="res-dot"></div>Azure free account — $200 credit for hands-on lab practice</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources (~$15–30)</div>
+            <div class="res-item"><div class="res-dot"></div>Scott Duffy AZ-104 — Udemy ($15–20 on sale) — most popular paid course</div>
+            <div class="res-item"><div class="res-dot"></div>Thomas Maurer AZ-104 practice exams — MeasureUp or Whizlabs</div>
+            <div class="res-item"><div class="res-dot"></div>A Cloud Guru AZ-104 — subscription model, strong hands-on labs</div>
+          </div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Why it matters</div>
+          <div class="res-item"><div class="res-dot"></div>Repeatedly called out as the most valuable cert in the modern Microsoft/hybrid-cloud world by hiring managers.</div>
+          <div class="res-item"><div class="res-dot"></div>Directly relevant to Charlotte-area finance and healthcare orgs running Microsoft 365 + Azure hybrid environments.</div>
+          <div class="res-item"><div class="res-dot"></div>Pairs naturally with Security+ — the combination covers both infrastructure and security compliance, which many mid-market IT roles require.</div>
+        </div>
+        <div style="margin-top:10px"><a class="link-btn" href="https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator/" target="_blank">&#9654; Official cert page &#8599;</a>&nbsp;&nbsp;<a class="link-btn" href="https://learn.microsoft.com/en-us/training/paths/az-104-administrator-prerequisites/" target="_blank">&#9654; Free MS Learn path &#8599;</a></div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#FCEBEB;color:#A32D2D;">RH</div>
+        <div class="cert-main">
+          <div class="cert-title">RHCSA — Red Hat Certified System Administrator</div>
+          <div class="cert-sub">Performance-based exam — you actually do the work · Universally respected for Linux</div>
+          <div class="cert-pills"><span class="pill p-red">~$400 exam</span><span class="pill p-blue">3–4 months</span><span class="pill p-teal">Linux track</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$400</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">3–4 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$95–120K</div></div>
+          <div class="stat-box"><div class="stat-label">Format</div><div class="stat-val">Hands-on lab</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>Red Hat free learning subscription — limited but useful</div>
+            <div class="res-item"><div class="res-dot"></div>HackerSploit Linux fundamentals series — YouTube</div>
+            <div class="res-item"><div class="res-dot"></div>Linux Academy free content + VMs in the browser</div>
+            <div class="res-item"><div class="res-dot"></div>Practice on Rocky Linux or AlmaLinux (RHEL clones, free)</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources</div>
+            <div class="res-item"><div class="res-dot"></div>Asghar Ghori RHCSA book — RHCSA Red Hat Linux Certification Study Guide (~$40)</div>
+            <div class="res-item"><div class="res-dot"></div>A Cloud Guru RHCSA course — strong lab environment</div>
+            <div class="res-item"><div class="res-dot"></div>Sander van Vugt RHCSA video course — industry standard instructor</div>
+          </div>
+        </div>
+        <div class="note-box">The RHCSA exam is entirely performance-based — no multiple choice. You're given a live system and tasks to complete. This makes it harder to fake and extremely credible to hiring managers who know Linux. Don't underestimate prep time.</div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#FAEEDA;color:#854F0B;">VCP</div>
+        <div class="cert-main">
+          <div class="cert-title">VMware VCP-DCV 2026 — Data Center Virtualization</div>
+          <div class="cert-sub">Premier cert for vSphere · Critical for hybrid enterprise environments</div>
+          <div class="cert-pills"><span class="pill p-amber">~$250 exam</span><span class="pill p-blue">2–3 months</span><span class="pill p-teal">Virtualization</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$250</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">2–3 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$100–125K</div></div>
+          <div class="stat-box"><div class="stat-label">Requirement</div><div class="stat-val">1 training class</div></div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Resources</div>
+          <div class="res-item"><div class="res-dot"></div>VMware Hands-on Labs — free browser-based lab environment at hol.vmware.com</div>
+          <div class="res-item"><div class="res-dot"></div>Trainsignal / Pluralsight VMware vSphere courses</div>
+          <div class="res-item"><div class="res-dot"></div>VMware official documentation — vSphere 8.x guides</div>
+        </div>
+        <div class="note-box">VCP-DCV requires attendance at an official VMware training course — this is mandatory, not optional. Factor in that training cost (~$2,000–4,000) unless employer-sponsored. Most large enterprises still run on-prem vSphere in a hybrid model.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFOSEC -->
+  <div id="infosec" class="track">
+    <div class="intro-card">The InfoSec track builds on Security+. CySA+ is the natural next step for defensive/SOC roles. CEH is the offensive/pentesting route. Both are DoD 8570 compliant and employer-recognized.</div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#EEEDFE;color:#3C3489;">CS+</div>
+        <div class="cert-main">
+          <div class="cert-title">CompTIA CySA+ — Cybersecurity Analyst (CS0-003)</div>
+          <div class="cert-sub">Defensive security · SIEM · Threat detection · SOC analyst roles · DoD CSSP Analyst</div>
+          <div class="cert-pills"><span class="pill p-purple">~$404 exam</span><span class="pill p-green">2–3 months</span><span class="pill p-teal">DoD 8570</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$404</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">2–3 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$85–110K</div></div>
+          <div class="stat-box"><div class="stat-label">Validity</div><div class="stat-val">3 years</div></div>
+        </div>
+        <div class="value-bar-wrap">
+          <div class="value-label">Value metrics</div>
+          <div class="bar-row"><div class="bar-name">SOC job demand</div><div class="bar-outer"><div class="bar-inner" style="width:82%;background:#534AB7"></div></div><div class="bar-pct">82%</div></div>
+          <div class="bar-row"><div class="bar-name">Salary impact</div><div class="bar-outer"><div class="bar-inner" style="width:68%;background:#1D9E75"></div></div><div class="bar-pct">68%</div></div>
+          <div class="bar-row"><div class="bar-name">Practical value</div><div class="bar-outer"><div class="bar-inner" style="width:88%;background:#534AB7"></div></div><div class="bar-pct">88%</div></div>
+          <div class="bar-row"><div class="bar-name">Study difficulty</div><div class="bar-outer"><div class="bar-inner" style="width:55%;background:#BA7517"></div></div><div class="bar-pct">55%</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>TryHackMe — SOC Level 1 &amp; 2 learning paths (free tier available)</div>
+            <div class="res-item"><div class="res-dot"></div>CompTIA official exam objectives — free PDF</div>
+            <div class="res-item"><div class="res-dot"></div>Cybrary free CySA+ course (account required)</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources (~$15–30)</div>
+            <div class="res-item"><div class="res-dot"></div>Jason Dion CySA+ CS0-003 — Udemy ($15–20 on sale) — top-rated course</div>
+            <div class="res-item"><div class="res-dot"></div>CompTIA CertMaster Labs — hands-on labs aligned to objectives</div>
+            <div class="res-item"><div class="res-dot"></div>Mike Chapple CySA+ Study Guide — book ($35–40)</div>
+          </div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Why it matters</div>
+          <div class="res-item"><div class="res-dot"></div>Bridges the gap between Security+ (entry) and CISSP (senior) — the logical mid-career move.</div>
+          <div class="res-item"><div class="res-dot"></div>Hands-on analytical focus — behavioral analytics, SIEM, vulnerability management, incident response workflow.</div>
+          <div class="res-item"><div class="res-dot"></div>DoD 8570 CSSP Analyst compliant — opens federal and defense contractor SOC roles.</div>
+        </div>
+        <div style="margin-top:10px"><a class="link-btn" href="https://www.comptia.org/certifications/cybersecurity-analyst" target="_blank">&#9654; Official cert page &#8599;</a></div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#FCEBEB;color:#A32D2D;">CEH</div>
+        <div class="cert-main">
+          <div class="cert-title">EC-Council CEH — Certified Ethical Hacker (v13)</div>
+          <div class="cert-sub">Offensive security · Pentesting methodology · DoD IAT Level III</div>
+          <div class="cert-pills"><span class="pill p-red">$550–$1,199</span><span class="pill p-blue">3–4 months</span><span class="pill p-teal">DoD 8570</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">$550–$1,199</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">3–4 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$90–120K</div></div>
+          <div class="stat-box"><div class="stat-label">DoD level</div><div class="stat-val">IAT III / CSSP</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>The Cyber Mentor YouTube — free ethical hacking content closely aligned to CEH objectives</div>
+            <div class="res-item"><div class="res-dot"></div>HackerSploit — Metasploit and tool walkthroughs</div>
+            <div class="res-item"><div class="res-dot"></div>TryHackMe — Junior Pentester path (free tier)</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources</div>
+            <div class="res-item"><div class="res-dot"></div>EC-Council official courseware (expensive but comprehensive)</div>
+            <div class="res-item"><div class="res-dot"></div>Total Seminars CEH — Udemy ($15–20)</div>
+            <div class="res-item"><div class="res-dot"></div>Matt Walker CEH All-in-One Study Guide (book, $40)</div>
+          </div>
+        </div>
+        <div class="note-box">CEH is recognized by HR and DoD. However, technical hiring managers sometimes prefer OSCP (Offensive Security) for hands-on credibility. CEH is theory-heavy — supplement with actual lab work (TryHackMe, HackTheBox) to make the cert meaningful in interviews.</div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#E1F5EE;color:#0F6E56;">CASP</div>
+        <div class="cert-main">
+          <div class="cert-title">CompTIA CASP+ / SecurityX — Advanced Security Practitioner</div>
+          <div class="cert-sub">Advanced hands-on security · DoD IAT Level III · Technical depth over management</div>
+          <div class="cert-pills"><span class="pill p-teal">~$480 exam</span><span class="pill p-blue">4–5 months</span><span class="pill p-teal">DoD IAT III</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$480</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">4–5 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$110–140K</div></div>
+          <div class="stat-box"><div class="stat-label">Prerequisite</div><div class="stat-val">Security+ + 10 yrs</div></div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Resources</div>
+          <div class="res-item"><div class="res-dot"></div>Nicholas Russo CASP+ — Udemy (top-rated course)</div>
+          <div class="res-item"><div class="res-dot"></div>CompTIA official study guide + CertMaster Labs</div>
+          <div class="res-item"><div class="res-dot"></div>Dion Training CASP+ practice exams</div>
+        </div>
+        <div class="note-box">CASP+ is for practitioners who want to stay technical (vs. moving into CISSP management path). Ideal if you want to be a senior security engineer rather than a security manager. No experience requirement for the exam itself — but you're expected to have deep knowledge.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AWS -->
+  <div id="aws" class="track">
+    <div class="intro-card">AWS holds 30–34% of global cloud market share. Certified AWS professionals earn 25–27% more on average. The Solutions Architect Associate is the highest-ROI single cert in the AWS track — appearing in ~80% of cloud job postings. The SysOps/CloudOps cert was renamed in September 2025 but content is essentially unchanged.</div>
+
+    <div class="seclabel">Foundational</div>
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#FAEEDA;color:#854F0B;">CCP</div>
+        <div class="cert-main">
+          <div class="cert-title">AWS Certified Cloud Practitioner (CLF-C02)</div>
+          <div class="cert-sub">Cloud concepts foundation · Easiest AWS cert · Good confidence builder — skip if you have 1+ yr AWS experience</div>
+          <div class="cert-pills"><span class="pill p-amber">$100 exam</span><span class="pill p-green">2–4 weeks</span><span class="pill p-gray">Foundational</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">$100</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">2–4 weeks</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$85–100K</div></div>
+          <div class="stat-box"><div class="stat-label">Salary lift</div><div class="stat-val">~$17K/yr</div></div>
+        </div>
+        <div class="value-bar-wrap">
+          <div class="value-label">Value metrics</div>
+          <div class="bar-row"><div class="bar-name">Difficulty</div><div class="bar-outer"><div class="bar-inner" style="width:20%;background:#BA7517"></div></div><div class="bar-pct">20%</div></div>
+          <div class="bar-row"><div class="bar-name">ROI vs SAA</div><div class="bar-outer"><div class="bar-inner" style="width:45%;background:#1D9E75"></div></div><div class="bar-pct">45%</div></div>
+          <div class="bar-row"><div class="bar-name">HR filter power</div><div class="bar-outer"><div class="bar-inner" style="width:50%;background:#185FA5"></div></div><div class="bar-pct">50%</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>AWS Skill Builder — free tier with official CLF-C02 content</div>
+            <div class="res-item"><div class="res-dot"></div>FreeCodeCamp CCP course — YouTube (free, 13hrs)</div>
+            <div class="res-item"><div class="res-dot"></div>AWS free tier account — hands-on practice</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources (~$15–30)</div>
+            <div class="res-item"><div class="res-dot"></div>Stephane Maarek AWS Cloud Practitioner — Udemy ($15–20 on sale) — #1 rated course</div>
+            <div class="res-item"><div class="res-dot"></div>Jon Bonso CLF-C02 practice exams — Udemy (highly recommended for drill)</div>
+          </div>
+        </div>
+        <div class="note-box">Recommendation: If you have IT experience but are new to AWS specifically — take this first for a structured foundation, then move directly to SAA. The $100 exam fee is low risk. If you already work in AWS day-to-day, skip it and go straight to SAA.</div>
+      </div>
+    </div>
+
+    <div class="seclabel">Associate — highest ROI tier</div>
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#E6F1FB;color:#0C447C;">SAA</div>
+        <div class="cert-main">
+          <div class="cert-title">AWS Solutions Architect Associate (SAA-C03)</div>
+          <div class="cert-sub">Most valuable single AWS cert · In 80% of cloud job postings · Best ROI for time invested</div>
+          <div class="cert-pills"><span class="pill p-blue">$150 exam</span><span class="pill p-green">4–8 weeks</span><span class="pill p-amber">$36K/yr salary lift avg</span><span class="pill p-amber">Top priority</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">$150</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">4–8 weeks</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$125K</div></div>
+          <div class="stat-box"><div class="stat-label">Salary lift</div><div class="stat-val">~$36K/yr avg</div></div>
+        </div>
+        <div class="value-bar-wrap">
+          <div class="value-label">Value metrics</div>
+          <div class="bar-row"><div class="bar-name">Job demand</div><div class="bar-outer"><div class="bar-inner" style="width:95%;background:#185FA5"></div></div><div class="bar-pct">95%</div></div>
+          <div class="bar-row"><div class="bar-name">Salary impact</div><div class="bar-outer"><div class="bar-inner" style="width:90%;background:#1D9E75"></div></div><div class="bar-pct">90%</div></div>
+          <div class="bar-row"><div class="bar-name">Study difficulty</div><div class="bar-outer"><div class="bar-inner" style="width:50%;background:#BA7517"></div></div><div class="bar-pct">50%</div></div>
+          <div class="bar-row"><div class="bar-name">Career mobility</div><div class="bar-outer"><div class="bar-inner" style="width:93%;background:#1D9E75"></div></div><div class="bar-pct">93%</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>AWS Skill Builder — official free SAA content + practice questions</div>
+            <div class="res-item"><div class="res-dot"></div>FreeCodeCamp SAA-C03 — YouTube (free, 8–10hr course)</div>
+            <div class="res-item"><div class="res-dot"></div>AWS whitepapers — Well-Architected Framework (free PDF, exam staple)</div>
+            <div class="res-item"><div class="res-dot"></div>AWS free tier — build labs hands-on to reinforce concepts</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources (~$15–30)</div>
+            <div class="res-item"><div class="res-dot"></div>Stephane Maarek SAA-C03 — Udemy ($15–20) — most purchased AWS course globally</div>
+            <div class="res-item"><div class="res-dot"></div>Jon Bonso SAA-C03 practice exams — Udemy — closest to real exam difficulty</div>
+            <div class="res-item"><div class="res-dot"></div>A Cloud Guru / Cloud Academy — subscription, strong labs</div>
+            <div class="res-item"><div class="res-dot"></div>TutorialsDojo cheat sheets — free + paid, great quick reference</div>
+          </div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Why it matters for SysAdmin / InfoSec</div>
+          <div class="res-item"><div class="res-dot"></div>Appears in 80% of cloud job postings — the most recognizable AWS credential to non-technical hiring managers and technical ones.</div>
+          <div class="res-item"><div class="res-dot"></div>$150 exam fee delivers the highest salary return of any AWS cert at this level — ~$36K/yr average uplift for the time invested.</div>
+          <div class="res-item"><div class="res-dot"></div>Teaches VPC design, IAM, S3, EC2, RDS, Route 53, ELB — core services any cloud sysadmin needs to operate.</div>
+          <div class="res-item"><div class="res-dot"></div>Direct pathway to AWS Security Specialty — the most impactful InfoSec AWS cert.</div>
+        </div>
+        <div style="margin-top:10px"><a class="link-btn" href="https://aws.amazon.com/certification/certified-solutions-architect-associate/" target="_blank">&#9654; Official cert page &#8599;</a>&nbsp;&nbsp;<a class="link-btn" href="https://www.udemy.com/course/aws-certified-solutions-architect-associate-saa-c03/" target="_blank">&#9654; Maarek course &#8599;</a></div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#E1F5EE;color:#0F6E56;">SOA</div>
+        <div class="cert-main">
+          <div class="cert-title">AWS CloudOps Engineer Associate / SysOps (SOA-C03)</div>
+          <div class="cert-sub">Renamed Sep 2025 (was SysOps Admin Associate) · Operations focus · Hands-on lab exam component</div>
+          <div class="cert-pills"><span class="pill p-teal">$150 exam</span><span class="pill p-green">8–12 weeks</span><span class="pill p-blue">$110–140K avg</span><span class="pill p-teal">Best for SysAdmins</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">$150</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">8–12 weeks</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$110–140K</div></div>
+          <div class="stat-box"><div class="stat-label">Format</div><div class="stat-val">MCQ + labs</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>AWS Skill Builder — SOA-C03 learning path (free tier)</div>
+            <div class="res-item"><div class="res-dot"></div>Stephane Maarek free SysOps preview — YouTube / Class Central</div>
+            <div class="res-item"><div class="res-dot"></div>AWS documentation — CloudWatch, Systems Manager, CloudFormation (exam staples)</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources (~$15)</div>
+            <div class="res-item"><div class="res-dot"></div>Stephane Maarek SysOps/CloudOps SOA-C03 — Udemy ($14–20) — 26.5 hrs, 4.6 stars, 147K students</div>
+            <div class="res-item"><div class="res-dot"></div>Jon Bonso SOA-C03 practice exams — Udemy (essential)</div>
+            <div class="res-item"><div class="res-dot"></div>A Cloud Guru SOA-C03 — strong hands-on lab environment</div>
+          </div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">What this covers that matters for SysAdmins</div>
+          <div class="res-item"><div class="res-dot"></div>EC2 management at scale, Auto Scaling, CloudWatch monitoring and alerting.</div>
+          <div class="res-item"><div class="res-dot"></div>AWS Systems Manager (SSM) — patch management, parameter store, run commands across fleets.</div>
+          <div class="res-item"><div class="res-dot"></div>CloudFormation — infrastructure automation. EBS, EFS, S3 operations and troubleshooting.</div>
+          <div class="res-item"><div class="res-dot"></div>The exam now includes a hands-on lab section — you perform real tasks in an AWS console. No faking it.</div>
+        </div>
+        <div class="note-box">This is the AWS cert most directly aligned to what a sysadmin actually does in the cloud. More operationally focused than SAA. If you're choosing between SAA and SOA, do SAA first (higher job demand), then SOA to demonstrate operational depth.</div>
+      </div>
+    </div>
+
+    <div class="seclabel">Specialty — premium pay tier</div>
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#FCEBEB;color:#A32D2D;">SEC</div>
+        <div class="cert-main">
+          <div class="cert-title">AWS Security Specialty (SCS-C02)</div>
+          <div class="cert-sub">Premium InfoSec cert · IAM, KMS, VPC security, compliance, incident response in AWS</div>
+          <div class="cert-pills"><span class="pill p-red">$300 exam</span><span class="pill p-blue">3–4 months</span><span class="pill p-amber">$150–160K avg</span><span class="pill p-amber">Top InfoSec AWS cert</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">$300</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">3–4 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$150–160K</div></div>
+          <div class="stat-box"><div class="stat-label">Prerequisite</div><div class="stat-val">SAA recommended</div></div>
+        </div>
+        <div class="value-bar-wrap">
+          <div class="value-label">Value metrics</div>
+          <div class="bar-row"><div class="bar-name">Salary premium</div><div class="bar-outer"><div class="bar-inner" style="width:88%;background:#1D9E75"></div></div><div class="bar-pct">88%</div></div>
+          <div class="bar-row"><div class="bar-name">Difficulty</div><div class="bar-outer"><div class="bar-inner" style="width:75%;background:#BA7517"></div></div><div class="bar-pct">75%</div></div>
+          <div class="bar-row"><div class="bar-name">InfoSec demand</div><div class="bar-outer"><div class="bar-inner" style="width:85%;background:#A32D2D"></div></div><div class="bar-pct">85%</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>AWS Skill Builder — Security Specialty learning path (free tier)</div>
+            <div class="res-item"><div class="res-dot"></div>AWS security whitepapers — IAM best practices, shared responsibility model (free, exam critical)</div>
+            <div class="res-item"><div class="res-dot"></div>re:Invent security sessions on YouTube — free, practitioner-level</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources</div>
+            <div class="res-item"><div class="res-dot"></div>Stephane Maarek AWS Security Specialty — Udemy ($15–20)</div>
+            <div class="res-item"><div class="res-dot"></div>Jon Bonso SCS-C02 practice exams — Udemy (essential for this level)</div>
+            <div class="res-item"><div class="res-dot"></div>A Cloud Guru Security Specialty — strong labs for GuardDuty, Security Hub, KMS</div>
+          </div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Why it's the top InfoSec AWS cert</div>
+          <div class="res-item"><div class="res-dot"></div>Deep IAM policy design, KMS encryption, VPC security groups and NACLs, WAF, Shield.</div>
+          <div class="res-item"><div class="res-dot"></div>Incident response in AWS — GuardDuty findings, CloudTrail forensics, Security Hub aggregation.</div>
+          <div class="res-item"><div class="res-dot"></div>Compliance — AWS Config, Macie for data discovery, Inspector for vulnerability scanning.</div>
+          <div class="res-item"><div class="res-dot"></div>$150–160K average salary — well above most other AWS certs at this level.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#EEEDFE;color:#3C3489;">SAP</div>
+        <div class="cert-main">
+          <div class="cert-title">AWS Solutions Architect Professional (SAP-C02)</div>
+          <div class="cert-sub">Highest AWS salary tier · Advanced multi-account architecture · Requires SAA first</div>
+          <div class="cert-pills"><span class="pill p-purple">$300 exam</span><span class="pill p-blue">3–4 months on top of SAA</span><span class="pill p-amber">$155K avg</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">$300</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">3–4 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$155K</div></div>
+          <div class="stat-box"><div class="stat-label">Prerequisite</div><div class="stat-val">SAA required</div></div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Resources</div>
+          <div class="res-item"><div class="res-dot"></div>Stephane Maarek SAP-C02 — Udemy ($15–20) — the standard course</div>
+          <div class="res-item"><div class="res-dot"></div>Jon Bonso SAP-C02 practice exams — widely considered the hardest practice set available, which means you'll be well-prepared</div>
+          <div class="res-item"><div class="res-dot"></div>AWS Well-Architected Framework whitepaper — required reading at this level</div>
+        </div>
+        <div class="note-box">One of the hardest IT certifications overall. Long, scenario-based questions with complex trade-offs. Only pursue after SAA + real-world AWS experience. The $155K average salary makes it worth the effort for senior cloud architecture roles.</div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#EAF3DE;color:#3B6D11;">DEV</div>
+        <div class="cert-main">
+          <div class="cert-title">AWS Developer Associate (DVA-C02)</div>
+          <div class="cert-sub">For sysadmins moving into DevOps/cloud automation · Lambda, CI/CD, DynamoDB, API Gateway</div>
+          <div class="cert-pills"><span class="pill p-green">$150 exam</span><span class="pill p-blue">8–10 weeks</span><span class="pill p-blue">$105–130K avg</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">$150</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">8–10 weeks</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$105–130K</div></div>
+          <div class="stat-box"><div class="stat-label">Best for</div><div class="stat-val">DevOps path</div></div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Resources</div>
+          <div class="res-item"><div class="res-dot"></div>Stephane Maarek DVA-C02 — Udemy ($15–20)</div>
+          <div class="res-item"><div class="res-dot"></div>AWS Skill Builder Developer Associate path — free tier</div>
+          <div class="res-item"><div class="res-dot"></div>Jon Bonso DVA-C02 practice exams — Udemy</div>
+        </div>
+        <div class="note-box">More relevant if you're moving toward cloud automation, IaC, or DevOps-adjacent roles. Less critical for pure InfoSec track. Good complement to SAA if you're being asked to do Lambda or CI/CD work as part of sysadmin duties.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SENIOR -->
+  <div id="senior" class="track">
+    <div class="intro-card">These require years of experience to qualify for. Both CISSP and CISM are management-level and carry the highest average salaries in InfoSec. Plan for these as 3–5 year targets if you're mid-career now.</div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#FAEEDA;color:#854F0B;">CISP</div>
+        <div class="cert-main">
+          <div class="cert-title">CISSP — Certified Information Systems Security Professional (ISC²)</div>
+          <div class="cert-sub">Gold standard · 5 years experience required · DoD IAM Level III · $148K avg US salary</div>
+          <div class="cert-pills"><span class="pill p-amber">~$749 exam</span><span class="pill p-blue">4–6 months</span><span class="pill p-amber">$148K avg</span><span class="pill p-red">5 yrs experience</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$749</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">4–6 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$148K (US)</div></div>
+          <div class="stat-box"><div class="stat-label">Experience req</div><div class="stat-val">5 years</div></div>
+        </div>
+        <div class="value-bar-wrap">
+          <div class="value-label">Value metrics</div>
+          <div class="bar-row"><div class="bar-name">Prestige</div><div class="bar-outer"><div class="bar-inner" style="width:99%;background:#BA7517"></div></div><div class="bar-pct">99%</div></div>
+          <div class="bar-row"><div class="bar-name">Salary impact</div><div class="bar-outer"><div class="bar-inner" style="width:95%;background:#1D9E75"></div></div><div class="bar-pct">95%</div></div>
+          <div class="bar-row"><div class="bar-name">Study difficulty</div><div class="bar-outer"><div class="bar-inner" style="width:85%;background:#E24B4A"></div></div><div class="bar-pct">85%</div></div>
+          <div class="bar-row"><div class="bar-name">Leadership roles</div><div class="bar-outer"><div class="bar-inner" style="width:92%;background:#BA7517"></div></div><div class="bar-pct">92%</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>Cybrary — free CISSP course (account required, solid overview)</div>
+            <div class="res-item"><div class="res-dot"></div>ISC² official free CISSP study tools (limited)</div>
+            <div class="res-item"><div class="res-dot"></div>CISSP subreddit — r/cissp — community resources and study plans</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources</div>
+            <div class="res-item"><div class="res-dot"></div>Mike Chapple &amp; David Seidl CISSP Study Guide — book ($40–50) — most recommended</div>
+            <div class="res-item"><div class="res-dot"></div>Destination Certification CISSP — YouTube + paid course — strong conceptual approach</div>
+            <div class="res-item"><div class="res-dot"></div>Thor Pedersen CISSP — Udemy ($15–20) — domain-by-domain coverage</div>
+            <div class="res-item"><div class="res-dot"></div>Boson CISSP practice exams — closest to real exam style</div>
+          </div>
+        </div>
+        <div class="note-box">⚠ ISC² changed the CISSP experience waiver list effective April 1, 2026. If you were relying on a prior credential to shorten the 5-year requirement, verify the current waiver list at isc2.org before registering. You can still sit the exam without the experience and earn Associate of ISC² status — valid while you accumulate qualifying years.</div>
+        <div style="margin-top:10px"><a class="link-btn" href="https://www.isc2.org/certifications/cissp" target="_blank">&#9654; Official cert page &#8599;</a></div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#FAEEDA;color:#854F0B;">CISM</div>
+        <div class="cert-main">
+          <div class="cert-title">CISM — Certified Information Security Manager (ISACA)</div>
+          <div class="cert-sub">Management &amp; governance focus · $150K avg · For security program ownership roles</div>
+          <div class="cert-pills"><span class="pill p-amber">~$760 exam</span><span class="pill p-blue">3–5 months</span><span class="pill p-amber">$150K avg</span><span class="pill p-red">5 yrs management exp</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$760</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">3–5 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$150K</div></div>
+          <div class="stat-box"><div class="stat-label">Focus</div><div class="stat-val">Management/GRC</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Free resources</div>
+            <div class="res-item"><div class="res-dot"></div>ISACA free CISM exam prep resources (account required)</div>
+            <div class="res-item"><div class="res-dot"></div>ISACA study guide sample chapters — free PDF download</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Paid resources</div>
+            <div class="res-item"><div class="res-dot"></div>ISACA official CISM review manual ($99 for ISACA members)</div>
+            <div class="res-item"><div class="res-dot"></div>Peter Gregory CISM All-in-One — book ($40)</div>
+            <div class="res-item"><div class="res-dot"></div>Udemy CISM Domain Boot Camps — individual domain coverage</div>
+          </div>
+        </div>
+        <div class="note-box">CISM is the management counterpart to CISSP's architectural focus. Choose CISSP if you want to stay hands-on technical at a senior level. Choose CISM if you're targeting InfoSec manager, IT director, or CISO-track roles where governance and program management matter more than technical depth.</div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#E6F1FB;color:#185FA5;">CISA</div>
+        <div class="cert-main">
+          <div class="cert-title">CISA — Certified Information Systems Auditor (ISACA)</div>
+          <div class="cert-sub">IT audit &amp; GRC · $102K avg · Ideal for compliance-heavy sectors (finance, healthcare)</div>
+          <div class="cert-pills"><span class="pill p-blue">~$760 exam</span><span class="pill p-blue">3–4 months</span><span class="pill p-blue">$102K avg</span><span class="pill p-gray">Audit/GRC track</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$760</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">3–4 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$102K</div></div>
+          <div class="stat-box"><div class="stat-label">Best sector</div><div class="stat-val">Finance / healthcare</div></div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Why it matters for Charlotte market</div>
+          <div class="res-item"><div class="res-dot"></div>Bank of America, Wells Fargo, Truist — all large Charlotte employers heavily focused on IT audit and SOX compliance.</div>
+          <div class="res-item"><div class="res-dot"></div>Healthcare IT (Atrium, Novant) — HIPAA audit and compliance roles are active hiring targets.</div>
+          <div class="res-item"><div class="res-dot"></div>CISA + CISSP is a powerful combination for senior GRC and security program roles in regulated industries.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPECIALTY -->
+  <div id="specialty" class="track">
+    <div class="intro-card">These are advanced or specialized certs that layer on top of your foundation. CCSP is the most impactful for cloud security roles. The emerging AI/ML security certs are worth watching as organizations deploy AI infrastructure.</div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#E1F5EE;color:#0F6E56;">CCSP</div>
+        <div class="cert-main">
+          <div class="cert-title">CCSP — Certified Cloud Security Professional (ISC²)</div>
+          <div class="cert-sub">Must-have for hybrid/multi-cloud security roles · Cloud architecture, data security, compliance</div>
+          <div class="cert-pills"><span class="pill p-teal">~$599 exam</span><span class="pill p-blue">3–4 months</span><span class="pill p-amber">$130–150K avg</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Exam fee</div><div class="stat-val">~$599</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">3–4 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$130–150K</div></div>
+          <div class="stat-box"><div class="stat-label">Prerequisite</div><div class="stat-val">5 yrs IT / 3 yrs cloud</div></div>
+        </div>
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">Resources</div>
+            <div class="res-item"><div class="res-dot"></div>ISC² official CCSP study guide ($40)</div>
+            <div class="res-item"><div class="res-dot"></div>Mike Chapple CCSP — Udemy or Cybrary</div>
+            <div class="res-item"><div class="res-dot"></div>Ben Malisow CCSP All-in-One — study guide book</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">Why it matters</div>
+            <div class="res-item"><div class="res-dot"></div>Designed for cloud security architects and engineers working in multi-cloud or hybrid environments.</div>
+            <div class="res-item"><div class="res-dot"></div>Increasingly required for enterprise cloud security roles — pairs well with AWS Security Specialty.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#EEEDFE;color:#3C3489;">OSCP</div>
+        <div class="cert-main">
+          <div class="cert-title">OSCP — Offensive Security Certified Professional</div>
+          <div class="cert-sub">Most respected hands-on pentesting cert · 24hr practical exam · Real credibility with technical teams</div>
+          <div class="cert-pills"><span class="pill p-purple">~$1,499 (course+exam)</span><span class="pill p-blue">3–6 months</span><span class="pill p-amber">$120–150K avg</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid4">
+          <div class="stat-box"><div class="stat-label">Total cost</div><div class="stat-val">~$1,499</div></div>
+          <div class="stat-box"><div class="stat-label">Study time</div><div class="stat-val">3–6 months</div></div>
+          <div class="stat-box"><div class="stat-label">Avg salary</div><div class="stat-val">$120–150K</div></div>
+          <div class="stat-box"><div class="stat-label">Exam format</div><div class="stat-val">24hr practical</div></div>
+        </div>
+        <div class="res-block" style="margin-top:8px">
+          <div class="res-label">Prep resources</div>
+          <div class="res-item"><div class="res-dot"></div>TCM Security — Practical Ethical Hacking course — best pre-OSCP prep</div>
+          <div class="res-item"><div class="res-dot"></div>HackTheBox + TryHackMe — essential for building box-breaking skills</div>
+          <div class="res-item"><div class="res-dot"></div>OffSec PEN-200 course — included with OSCP registration</div>
+        </div>
+        <div class="note-box">OSCP is the most respected hands-on security cert by technical hiring managers. It requires you to compromise machines in a lab environment during a 24-hour practical exam. Not for the faint-hearted — but if you pass it, you don't need to prove your skills in an interview.</div>
+      </div>
+    </div>
+
+    <div class="cert-card" onclick="toggleCard(this)">
+      <div class="cert-header">
+        <div class="badge" style="background:#F1EFE8;color:#5F5E5A;">AI+</div>
+        <div class="cert-main">
+          <div class="cert-title">CompTIA SecAI+ (New 2025) &amp; AWS AI Practitioner</div>
+          <div class="cert-sub">Emerging AI security certs · 73% of security pros say AI will require new specialized skills</div>
+          <div class="cert-pills"><span class="pill p-gray">~$404 / $100</span><span class="pill p-gray">2–3 months</span><span class="pill p-gray">Emerging</span></div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="cert-body">
+        <div class="grid2">
+          <div class="res-block">
+            <div class="res-label">CompTIA SecAI+ (launched 2025)</div>
+            <div class="res-item"><div class="res-dot"></div>Validates AI governance, data protection, and AI-specific threat detection.</div>
+            <div class="res-item"><div class="res-dot"></div>Best complement to Security+ or CySA+ for orgs deploying AI systems.</div>
+            <div class="res-item"><div class="res-dot"></div>Target 3–4 yrs experience. Still early-stage recognition but demand growing fast.</div>
+          </div>
+          <div class="res-block">
+            <div class="res-label">AWS AI Practitioner (AIF-C01)</div>
+            <div class="res-item"><div class="res-dot"></div>Foundational AI/ML cert from AWS — $100 exam, 2–4 weeks study.</div>
+            <div class="res-item"><div class="res-dot"></div>Best for sysadmins whose orgs are deploying AI infrastructure on AWS.</div>
+            <div class="res-item"><div class="res-dot"></div>Fastest-growing AWS cert category in 2025–2026.</div>
+          </div>
+        </div>
+        <div class="note-box">AI security certs are not yet mainstream requirements but the trend is clear. If you're 2+ years into your career, adding one of these positions you ahead of the curve for the next hiring cycle. ISC² 2025 Workforce Study: 73% of security professionals say AI will create more specialized cybersecurity skill requirements.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTrack(id,btn){
+  document.querySelectorAll('.track').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+function toggleCard(card){
+  const body=card.querySelector('.cert-body');
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  card.classList.toggle('open',!isOpen);
+}
+</script>
